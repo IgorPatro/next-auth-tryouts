@@ -1,11 +1,9 @@
 import NextAuth from "next-auth"
 import CredentialProvider from "next-auth/providers/credentials"
 import { PrismaClient } from "@prisma/client"
-// import { PrismaAdapter } from "@next-auth/prisma-adapter"
 const prisma = new PrismaClient()
 
 export default NextAuth({
-  // adapter: PrismaAdapter(prisma),
   providers: [
     CredentialProvider({
       name: "credentials",
@@ -32,6 +30,8 @@ export default NextAuth({
             id: userByEmail.id,
             name: userByEmail.name,
             email: userByEmail.email,
+            testOne: "testOne",
+            testTwo: "testTwo",
           }
         }
 
@@ -44,25 +44,27 @@ export default NextAuth({
     jwt: ({ token, user }) => {
       // first time jwt callback is run, user object is available
       if (user) {
-        token.id = user.id
+        token.user = user
       }
+
       return token
     },
     session: ({ session, token }) => {
-      if (token) {
-        session.id = token.id
+      if (token.user) {
+        session.user = token.user
       }
 
       return session
     },
   },
-  secret: "fhaisfahisdfas",
   jwt: {
     secret: "test",
     encryption: true,
   },
   session: {
     jwt: true,
-    maxAge: 60,
+    maxAge: 6000,
+    strategy: "jwt",
   },
+  debug: true,
 })

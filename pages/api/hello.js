@@ -7,8 +7,6 @@ const handler = async (req, res) => {
 
   const users = await prisma.user.findMany()
 
-  console.log(users)
-
   // From session we can take the id and then do sth in db by user id
   console.log(session)
 

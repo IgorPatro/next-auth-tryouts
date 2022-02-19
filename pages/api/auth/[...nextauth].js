@@ -1,7 +1,11 @@
 import NextAuth from "next-auth"
 import CredentialProvider from "next-auth/providers/credentials"
+import { PrismaClient } from "@prisma/client"
+// import { PrismaAdapter } from "@next-auth/prisma-adapter"
+const prisma = new PrismaClient()
 
 export default NextAuth({
+  // adapter: PrismaAdapter(prisma),
   providers: [
     CredentialProvider({
       name: "credentials",
@@ -17,16 +21,17 @@ export default NextAuth({
           placeholder: "*************",
         },
       },
-      authorize: (credentials) => {
+      authorize: async (credentials) => {
         // database look up
-        if (
-          credentials.email === "i.patro@wp.pl" &&
-          credentials.password === "pass123"
-        ) {
+        const userByEmail = await prisma.user.findFirst({
+          where: { email: credentials.email },
+        })
+
+        if (credentials.password === userByEmail.password) {
           return {
-            id: 264817401, // Here can be db id
-            name: "Igor",
-            email: "Igor Patro",
+            id: userByEmail.id,
+            name: userByEmail.name,
+            email: userByEmail.email,
           }
         }
 
@@ -51,7 +56,7 @@ export default NextAuth({
       return session
     },
   },
-  secret: "test",
+  secret: "fhaisfahisdfas",
   jwt: {
     secret: "test",
     encryption: true,

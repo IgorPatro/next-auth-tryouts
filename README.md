@@ -23,7 +23,7 @@ Private Next Auth tryouts
 - build # production build
 - start # serving production build
 - lint # linting code
-- db-dev-push # pushing new schema to database
+- db-dev-push # pushing new schema to local database
 ```
 
 
